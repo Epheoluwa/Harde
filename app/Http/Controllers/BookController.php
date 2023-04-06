@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
-
-use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
@@ -51,8 +51,40 @@ class BookController extends Controller
         }
     }
 
-    public function testbooks(Request $request)
+    public function fetchLocalbooks(Request $request)
     {
-        print_r($request->all()) ;
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'isbn' => 'required|unique:books',
+            'authors.*' => 'nullable',
+            'country' => 'required',
+            'number_of_pages' => 'required',
+            'publisher' => 'required',
+            'release_date' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return new JsonResponse(
+                [
+                    'status_code' => 400,
+                    'Message' => $validator->errors()->first()
+                ]
+            );
+        }
+        $data = $request->all();
+        $save = Book::create($data);
+        if($save)
+        {
+            $savedRecord = Book::Where('id',$save->id)->select('name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->first();
+            return new JsonResponse(
+                [
+                    'status_code' => 201,
+                    'status' => "success",
+                    "data" => [
+                        "book" => $savedRecord,
+                    ]
+                ]
+            );
+        }
     }
 }
