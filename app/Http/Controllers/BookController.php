@@ -122,7 +122,7 @@ class BookController extends Controller
             [
                 'status_code' => 200,
                 'status' => "success",
-                "data" =>  (!empty($fetchbooks)) ? $fetchbooks : []
+                "data" =>  $fetchbooks 
             ]
         );
     }
@@ -175,10 +175,26 @@ class BookController extends Controller
         if ($delete) {
             return new JsonResponse(
                 [
-                    'status_code' => 200,
+                    'status_code' => 204,
                     'status' => "success",
                     'message' => "The book " . $name . " was deleted successfully",
                     "data" => []
+                ]
+            );
+        }
+    }
+
+
+    //fetch single book record
+    public function fetchSingleLocalbooks($id)
+    {
+        $getSinglebooks = Book::select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->whereId($id)->get();
+        if ($getSinglebooks) {
+            return new JsonResponse(
+                [
+                    'status_code' => 200,
+                    'status' => "success",
+                    "data" => $getSinglebooks
                 ]
             );
         }

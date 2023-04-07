@@ -23,6 +23,7 @@ Route::post('v1/books', [BookController::class, 'postLocalbooks']);
 Route::get('v1/books', [BookController::class, 'fetchLocalbooks']);
 Route::patch('v1/books/:{id}', [BookController::class, 'patchLocalbooks']);
 Route::delete('v1/books/:{id}', [BookController::class, 'deleteLocalbooks']);
+Route::get('v1/books/:{id}', [BookController::class, 'fetchSingleLocalbooks']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
