@@ -51,7 +51,7 @@ class BookController extends Controller
         }
     }
 
-    public function fetchLocalbooks(Request $request)
+    public function postLocalbooks(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -86,5 +86,44 @@ class BookController extends Controller
                 ]
             );
         }
+    }
+
+    public function fetchLocalbooks(Request $request)
+    {
+       
+        if ($request->name) {
+            return $this->getbook('name',$request->name);
+           
+        }elseif ($request->country) {
+            return $this->getbook('country',$request->country);
+        }
+        elseif ($request->publisher) {
+            return $this->getbook('publisher',$request->publisher);
+        }
+        elseif ($request->release_date) {
+            return $this->getbook('release_date',$request->release_date);
+        }else{
+            $getbooks = Book::select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->get();
+            return new JsonResponse(
+                [
+                    'status_code' => 200,
+                    'status' => "success",
+                    "data" =>  (!empty($getbooks)) ? $getbooks : []
+                ]
+            );
+        }  
+    }
+
+    //run all query logic here
+    private function getbook($column, $params)
+    {
+        $fetchbooks = Book::select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->where($column, 'LIKE', '%'.$params.'%')->get();
+        return new JsonResponse(
+            [
+                'status_code' => 200,
+                'status' => "success",
+                "data" =>  (!empty($fetchbooks)) ? $fetchbooks : []
+            ]
+        );
     }
 }

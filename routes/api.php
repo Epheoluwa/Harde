@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('external-books', [BookController::class, 'fetchbooks']);
 
 //POST, GET, PUT, DELETE, SHOW DATA FOR LOCAL STORAGE
-Route::post('v1/books', [BookController::class, 'fetchLocalbooks']);
+Route::post('v1/books', [BookController::class, 'postLocalbooks']);
+Route::get('v1/books', [BookController::class, 'fetchLocalbooks']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
