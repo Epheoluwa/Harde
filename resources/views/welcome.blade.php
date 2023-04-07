@@ -104,22 +104,62 @@
                         <!-- Edit Modal -->
                         <div class="modal fade" id="editModal{{$d->id}}" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                                <form action="" method="POST">
+                                <form action="{{url('/edit-record', $d->id)}}" method="POST">
                                     {{ csrf_field() }}
-                                    {{ method_field('PATCH') }}
+                                    {{ method_field('PUT') }}
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            ...
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label for="amount">Name</label>
+                                                        <input type="text" name="name" class="form-control" required value="{{ $d->name }}">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="amount">Isbn</label>
+                                                        <input type="text" name="isbn" class="form-control"  value="{{ $d->isbn }}">
+                                                    </div>
+                                                    <div class="col-md-12 mt-3" id="all-attributes-{{ $d->id }}">
+                                                        <label for="amount">Authors</label>
+                                                        @foreach($d->authors as $authors)
+                                                        <div class="row form-group mt-2" id="Qx_{{ $d->id }}">
+                                                            <div class="col-md-10">
+                                                                <input name="authors[]" class="form-control authXX" value="{{ $authors }}">
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <button class="btn btn-danger times btn-sm" onclick="deleteQ('Qx_{{ $d->id }}')" type="button"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+                                                    <div class="col-md-6 mt-3">
+                                                        <label for="amount">Country</label>
+                                                        <input type="text" name="country" class="form-control" required value="{{ $d->country }}">
+                                                    </div>
+                                                    <div class="col-md-6 mt-3">
+                                                        <label for="amount">Number of page</label>
+                                                        <input type="text" name="number_of_pages" class="form-control" required value="{{ $d->number_of_pages }}">
+                                                    </div>
+                                                    <div class="col-md-6 mt-3">
+                                                        <label for="amount">Publisher</label>
+                                                        <input type="text" name="publisher" class="form-control" required value="{{ $d->publisher }}">
+                                                    </div>
+                                                    <div class="col-md-6 mt-3">
+                                                        <label for="amount">Release Date</label>
+                                                        <input type="date" name="release_date" class="form-control" required value="{{ $d->release_date }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button class="btn btn-primary float-right" onclick="addQ('{{ $d->id }}')" type="button">Add New Author</button>
+                                                <button type="submit" class="btn btn-success">Update changes</button>
+                                            </div>
                                         </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Update changes</button>
-                                        </div>
-                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -152,6 +192,7 @@
         });
     });
 </script>
+<script src="{{ url('js/index.js') }}"></script>
 <script>
     @if(Session::has('message'))
     toastr.options = {
@@ -168,7 +209,6 @@
     }
     toastr.error("{{ session('error') }}");
     @endif
-
 </script>
 
 </html>

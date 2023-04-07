@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontEndBookController::class, 'index'])->name('index');
 Route::delete('delete-record/{id}', [FrontEndBookController::class, 'deleterecord']);
+Route::put('edit-record/{id}', [FrontEndBookController::class, 'editrecord']);
