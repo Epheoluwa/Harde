@@ -126,4 +126,43 @@ class BookController extends Controller
             ]
         );
     }
+
+    public function patchLocalbooks(Request $request, $id)
+    {
+        $getname = Book::Where('id',$id)->select('name')->first();
+
+        $name = $getname['name'];
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|required',
+            'isbn' => 'sometimes|required|unique:books',
+            'authors.*' => 'sometimes|nullable',
+            'country' => 'sometimes|required',
+            'number_of_pages' => 'sometimes|required',
+            'publisher' => 'sometimes|required',
+            'release_date' => 'sometimes|required',
+        ]);
+
+        if ($validator->fails()) {
+            return new JsonResponse(
+                [
+                    'status_code' => 400,
+                    'Message' => $validator->errors()->first()
+                ]
+            );
+        }
+        
+        $data =  $request->all();
+        $update = Book::whereId($id)->update($data);
+        if ($update) {
+            $editRecord = Book::Where('id',$id)->select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->first();
+            return new JsonResponse(
+                [
+                    'status_code' => 200,
+                    'status' => "success",
+                    'message' => "The book " . $name . " was updated successfully",
+                    "data" => $editRecord
+                ]
+            );
+        }
+    }
 }
