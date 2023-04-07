@@ -127,10 +127,10 @@ class BookController extends Controller
         );
     }
 
+    //Update the book details
     public function patchLocalbooks(Request $request, $id)
     {
         $getname = Book::Where('id',$id)->select('name')->first();
-
         $name = $getname['name'];
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required',
@@ -161,6 +161,24 @@ class BookController extends Controller
                     'status' => "success",
                     'message' => "The book " . $name . " was updated successfully",
                     "data" => $editRecord
+                ]
+            );
+        }
+    }
+
+    //Delete book details
+    public function deleteLocalbooks($id)
+    {
+        $getname = Book::Where('id',$id)->select('name')->first();
+        $name = $getname['name'];
+        $delete = Book::whereId($id)->delete();
+        if ($delete) {
+            return new JsonResponse(
+                [
+                    'status_code' => 200,
+                    'status' => "success",
+                    'message' => "The book " . $name . " was deleted successfully",
+                    "data" => []
                 ]
             );
         }
