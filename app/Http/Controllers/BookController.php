@@ -14,14 +14,12 @@ class BookController extends Controller
     public function fetchbooks(Request $request)
     {
         $querystring = $request->name;
-        $string = trim($querystring , ':');
-        
+        $string = trim($querystring, ':');
         try {
             $response = Http::get("https://www.anapioficeandfire.com/api/books/?name=" . $string);
-            
+
             $jsonData = $response->json();
-            foreach($jsonData as $js)
-            {
+            foreach ($jsonData as $js) {
                 $this->data['name'] = $js['name'];
                 $this->data['isbn'] = $js['isbn'];
                 $this->data['authors'] = $js['authors'];
@@ -30,21 +28,21 @@ class BookController extends Controller
                 $this->data['country'] = $js['country'];
                 $this->data['release_date'] = date('Y-m-d', strtotime($js['released']));
             }
-            
-           return new JsonResponse(
-             [
-                "status_code" => 200,
-                "status" => "success",
-                'data' =>(!empty($this->data)) ? [$this->data] : [] , 
-             ]
-             );
+
+            return new JsonResponse(
+                [
+                    "status_code" => 200,
+                    "status" => "success",
+                    'data' => (!empty($this->data)) ? [$this->data] : [],
+                ]
+            );
         } catch (\Exception $e) {
             return new JsonResponse(
                 [
                     'Message' => 'An error occured, PLEASE REFRESH THE URL',
                     'response' => $e->getMessage()
                 ]
-                );
+            );
         }
     }
 
@@ -70,9 +68,8 @@ class BookController extends Controller
         }
         $data = $request->all();
         $save = Book::create($data);
-        if($save)
-        {
-            $savedRecord = Book::Where('id',$save->id)->select('name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->first();
+        if ($save) {
+            $savedRecord = Book::Where('id', $save->id)->select('name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->first();
             return new JsonResponse(
                 [
                     'status_code' => 201,
@@ -87,39 +84,36 @@ class BookController extends Controller
 
     public function fetchLocalbooks(Request $request)
     {
-       
+
         if ($request->name) {
-            return $this->getbook('name',$request->name);
-           
-        }elseif ($request->country) {
-            return $this->getbook('country',$request->country);
-        }
-        elseif ($request->publisher) {
-            return $this->getbook('publisher',$request->publisher);
-        }
-        elseif ($request->release_date) {
-            return $this->getbook('release_date',$request->release_date);
-        }else{
-            $getbooks = Book::select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->get();
+            return $this->getbook('name', $request->name);
+        } elseif ($request->country) {
+            return $this->getbook('country', $request->country);
+        } elseif ($request->publisher) {
+            return $this->getbook('publisher', $request->publisher);
+        } elseif ($request->release_date) {
+            return $this->getbook('release_date', $request->release_date);
+        } else {
+            $getbooks = Book::select('id', 'name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->get();
             return new JsonResponse(
                 [
                     'status_code' => 200,
                     'status' => "success",
-                    "data" =>  (!empty($getbooks)) ? $getbooks : []
+                    "data" => (!empty($getbooks)) ? $getbooks : []
                 ]
             );
-        }  
+        }
     }
 
     //run all query logic here
     private function getbook($column, $params)
     {
-        $fetchbooks = Book::select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->where($column, 'LIKE', '%'.$params.'%')->get();
+        $fetchbooks = Book::select('id', 'name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->where($column, 'LIKE', '%' . $params . '%')->get();
         return new JsonResponse(
             [
                 'status_code' => 200,
                 'status' => "success",
-                "data" =>  $fetchbooks 
+                "data" =>  $fetchbooks
             ]
         );
     }
@@ -127,37 +121,46 @@ class BookController extends Controller
     //Update the book details
     public function patchLocalbooks(Request $request, $id)
     {
-        $getname = Book::Where('id',$id)->select('name')->first();
-        $name = $getname['name'];
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required',
-            'isbn' => 'sometimes|required|unique:books',
-            'authors.*' => 'sometimes|nullable',
-            'country' => 'sometimes|required',
-            'number_of_pages' => 'sometimes|required',
-            'publisher' => 'sometimes|required',
-            'release_date' => 'sometimes|required',
-        ]);
+        try {
+            $getname = Book::Where('id', $id)->select('name')->first();
+            $name = $getname['name'];
+            $validator = Validator::make($request->all(), [
+                'name' => 'sometimes|required',
+                'isbn' => 'sometimes|required|unique:books',
+                'authors.*' => 'sometimes|nullable',
+                'country' => 'sometimes|required',
+                'number_of_pages' => 'sometimes|required',
+                'publisher' => 'sometimes|required',
+                'release_date' => 'sometimes|required',
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return new JsonResponse(
+                    [
+                        'status_code' => 400,
+                        'Message' => $validator->errors()->first()
+                    ]
+                );
+            }
+
+            $data =  $request->all();
+
+            $update = Book::whereId($id)->update($data);
+            if ($update) {
+                $editRecord = Book::Where('id', $id)->select('id', 'name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->first();
+                return new JsonResponse(
+                    [
+                        'status_code' => 200,
+                        'status' => "success",
+                        'message' => "The book " . $name . " was updated successfully",
+                        "data" => $editRecord
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
             return new JsonResponse(
                 [
-                    'status_code' => 400,
-                    'Message' => $validator->errors()->first()
-                ]
-            );
-        }
-        
-        $data =  $request->all();
-        $update = Book::whereId($id)->update($data);
-        if ($update) {
-            $editRecord = Book::Where('id',$id)->select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->first();
-            return new JsonResponse(
-                [
-                    'status_code' => 200,
-                    'status' => "success",
-                    'message' => "The book " . $name . " was updated successfully",
-                    "data" => $editRecord
+                    'response' => $e->getMessage()
                 ]
             );
         }
@@ -166,16 +169,24 @@ class BookController extends Controller
     //Delete book details
     public function deleteLocalbooks($id)
     {
-        $getname = Book::Where('id',$id)->select('name')->first();
-        $name = $getname['name'];
-        $delete = Book::whereId($id)->delete();
-        if ($delete) {
+        try {
+            $getname = Book::Where('id', $id)->select('name')->first();
+            $name = $getname['name'];
+            $delete = Book::whereId($id)->delete();
+            if ($delete) {
+                return new JsonResponse(
+                    [
+                        'status_code' => 204,
+                        'status' => "success",
+                        'message' => "The book " . $name . " was deleted successfully",
+                        "data" => []
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
             return new JsonResponse(
                 [
-                    'status_code' => 204,
-                    'status' => "success",
-                    'message' => "The book " . $name . " was deleted successfully",
-                    "data" => []
+                    'response' => $e->getMessage()
                 ]
             );
         }
@@ -185,13 +196,21 @@ class BookController extends Controller
     //fetch single book record
     public function fetchSingleLocalbooks($id)
     {
-        $getSinglebooks = Book::select('id','name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->whereId($id)->get();
-        if ($getSinglebooks) {
+        try {
+            $getSinglebooks = Book::select('id', 'name', 'isbn', 'authors',  'number_of_pages', 'publisher', 'country', 'release_date')->whereId($id)->get();
+            if ($getSinglebooks) {
+                return new JsonResponse(
+                    [
+                        'status_code' => 200,
+                        'status' => "success",
+                        "data" => $getSinglebooks
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
             return new JsonResponse(
                 [
-                    'status_code' => 200,
-                    'status' => "success",
-                    "data" => $getSinglebooks
+                    'response' => $e->getMessage()
                 ]
             );
         }
