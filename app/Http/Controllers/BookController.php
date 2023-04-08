@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class BookController extends Controller
 {
-    private $data;
+    private $data = [];
     public function fetchbooks(Request $request)
     {
         $querystring = $request->name;
@@ -20,10 +20,6 @@ class BookController extends Controller
             $response = Http::get("https://www.anapioficeandfire.com/api/books/?name=" . $string);
             
             $jsonData = $response->json();
-            if(count($jsonData) > 0)
-            {
-                $this->data = [];
-            }
             foreach($jsonData as $js)
             {
                 $this->data['name'] = $js['name'];
@@ -45,7 +41,7 @@ class BookController extends Controller
         } catch (\Exception $e) {
             return new JsonResponse(
                 [
-                    'Message' => 'An error occured, Failed to connect to the provided endpoint. PLEASE REFRESH THE URL',
+                    'Message' => 'An error occured, PLEASE REFRESH THE URL',
                     'response' => $e->getMessage()
                 ]
                 );

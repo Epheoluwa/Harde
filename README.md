@@ -28,7 +28,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Next up, if you are using the ```MYSQL DATABASE``` or any other database, they is need to create the database which will be grabbed from the ```DB_DATABASE``` environment variable. ```MYSQL``` database query written below
+Next up, if you are using the ```MYSQL DATABASE``` or any other database, there is need to create the database which will be grabbed from the ```DB_DATABASE``` environment variable. ```MYSQL``` database query written below
 ```
 mysql;
 create database database_name;
@@ -51,7 +51,7 @@ php artisan serve
 ```ruby
 GET http://127.0.0.1:8000/api/external-books?name=:nameOfBook
 ```
-The search query parameter[book name] can be written with space i.e ```A Game of Thrones```
+The search query parameter[book name] can be written with space i.e  ```A Game of Thrones```
 
 ## Requirement 2
 ### Create
@@ -74,7 +74,7 @@ Get all book record from database. The api accept the following search parameter
 ```ruby
 GET http://127.0.0.1:8000/api/v1/books
 ```
-Example below Using the search query parameter
+Example below using the search query parameter
 
 ```ruby
 GET http://127.0.0.1:8000/api/v1/books?name=book
