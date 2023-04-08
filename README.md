@@ -7,48 +7,103 @@ API service to get information about books. Additionally, you will implement a s
 •	Twitter: [@ifegracelife](https://twitter.com/ifegracelife) <br>
 •	Portfolio: [Solomon](https://epheoluwa-portfolio.netlify.app/) <br>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Project Setup
+```
+git clone git@github.com:Epheoluwa/Harde.git
+cd Harde
+composer install
+cp .env.example .env 
+php artisan key:generate
+php artisan cache:clear && php artisan config:clear 
+```
 
-## Learning Laravel
+## Database Setup
+Different CRUD request will be performed using local storage so we need to setup our database connection
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=database_name
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Next up, if you are using the ```MYSQL DATABASE``` or any other database, they is need to create the database which will be grabbed from the ```DB_DATABASE``` environment variable. ```MYSQL``` database query written below
+```
+mysql;
+create database database_name;
+exit;
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Finally, run the code below to make migrations.
+```
+php artisan migrate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Run the application
 
-## Laravel Sponsors
+```
+php artisan serve
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Requirement 1
 
-### Premium Partners
+```ruby
+GET http://127.0.0.1:8000/api/external-books?name=:nameOfBook
+```
+The search query parameter[book name] can be written with space i.e ```A Game of Thrones```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Requirement 2
+### Create
+Post book record to the database using the following parameters which are all required
+•	name <br>
+•	isbn - [This field is Unique] <br>
+•	authors <br>
+•	country <br>
+•	number_of_pages <br>
+•	publisher <br>
+•	release_date <br>
 
-## Contributing
+```ruby
+POST http://127.0.0.1:8000/api/v1/books
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Read
+Get all book record from database. The api accept the following search parameter for sorting ```name(string), country(string), publisher(string), release date(year,integer)```
 
-## Code of Conduct
+```ruby
+GET http://127.0.0.1:8000/api/v1/books
+```
+Example below Using the search query parameter
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```ruby
+GET http://127.0.0.1:8000/api/v1/books?name=book
+```
 
-## Security Vulnerabilities
+### Update
+Update any of the book record stored in the database, this api takes an ```id``` parameter which is an ```integer``` and the data which you want to update
+```ruby
+PATCH http://127.0.0.1:8000/api/v1/books/:id
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Delete
+Delete any of the book record stored in the database, this api takes an ```id``` parameter which is the id of the book to be deleted.
+```ruby
+DELETE http://127.0.0.1:8000/api/v1/books/:id
+```
 
-## License
+### Show
+Show specific book record stored in the database, this api takes an ```id``` parameter which is the id of the book you want to recieve back.
+```ruby
+GET http://127.0.0.1:8000/api/v1/books/:id
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Testing
+Test class and methods has be written run the command below to test code
+```
+php artisan test
+```
+To view response gotten for each test on terminal, include this command to the method
+```ruby
+$response->dd();
+```
