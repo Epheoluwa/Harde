@@ -10,7 +10,7 @@ class FrontEndBookController extends Controller
 {
     public function index()
     {
-        $data = Book::get();
+        $data = Book::limit(10)->get();
         return view('welcome', compact('data'));
     }
 

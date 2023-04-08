@@ -189,6 +189,7 @@
     $(document).ready(function() {
         $('#allbooks').DataTable({
             ordering: false,
+            paging: false,
         });
     });
 </script>
