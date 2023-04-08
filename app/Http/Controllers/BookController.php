@@ -13,8 +13,9 @@ class BookController extends Controller
     private $data;
     public function fetchbooks(Request $request)
     {
-        $string = $request->name;
-
+        $querystring = $request->name;
+        $string = trim($querystring , ':');
+        
         try {
             $response = Http::get("https://www.anapioficeandfire.com/api/books/?name=" . $string);
             

@@ -42,31 +42,31 @@ class BookTest extends TestCase
     //post data to local book db 
 
     // PLEASE NOTE: This will fail after first test runn because fields has been created inn the database which duplicate is not allowed for isbn
-    // public function test_post_local_books()
-    // {
-    //     $response = $this->postJson('api/v1/books', [
-    //             "name" => "Six Book ",
-    //             "isbn" => "132-2413243567",
-    //             "authors" => [ "Solomon Ifeoluwa"],
-    //             "country" => "Croatia",
-    //             "number_of_pages" => 150,
-    //             "publisher" => "Cro Book",
-    //             "release_date" => "2022-1-18"
-    //     ]);
-    //     $response
-    //     ->assertJson(
-    //         fn (AssertableJson $json) =>
-    //         $json->where('status_code', 201)
-    //             ->where('status', "success")
-    //             ->etc()
-    //     );
-    //     $response->assertStatus(200);
-    // }
+    public function test_post_local_books()
+    {
+        $response = $this->postJson('api/v1/books', [
+                "name" => "Testing Book ",
+                "isbn" => "132-2413243567",
+                "authors" => [ "Solomon Ifeoluwa"],
+                "country" => "Croatia",
+                "number_of_pages" => 150,
+                "publisher" => "Cro Book",
+                "release_date" => "2022-1-18"
+        ]);
+        $response
+        ->assertJson(
+            fn (AssertableJson $json) =>
+            $json->where('status_code', 201)
+                ->where('status', "success")
+                ->etc()
+        );
+        $response->assertStatus(200);
+    }
 
     //Update book in the local db
     public function test_update_local_books()
     {
-        $response = $this->patchJson('api/v1/books/:3', [
+        $response = $this->patchJson('api/v1/books/:id', [
             'name' => 'Third book Update'
         ]);
         $response->assertJson(
@@ -78,13 +78,26 @@ class BookTest extends TestCase
         $response->assertStatus(200);
     }
 
-    //Delete books in local db
+    //Delete books in local db 
     public function test_delete_local_book()
     {
-        $response = $this->deleteJson('api/v1/books/:8');
+        $response = $this->deleteJson('api/v1/books/:id');
         $response->assertJson(
             fn (AssertableJson $json) =>
             $json->where('status_code', 204)
+                ->where('status', "success")
+                ->etc()
+        );
+        $response->assertStatus(200);
+    }
+
+    //Fetch specific book from external API
+    public function test_fetch_specific_book_from_api()
+    {
+        $response = $this->getJson('api/external-books?name=:A Game of Thrones');
+        $response->assertJson(
+            fn (AssertableJson $json) =>
+            $json->where('status_code', 200)
                 ->where('status', "success")
                 ->etc()
         );
