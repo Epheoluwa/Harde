@@ -1,5 +1,5 @@
 ## Harde 
-This is a short coding assessment, in which you will implement a REST API that calls an external
+This is a short practice code, in which you will implement a REST API that calls an external
 API service to get information about books. Additionally, you will implement a simple CRUD
 (Create, Read, Update, Delete) API with a local database of your choice.
 
